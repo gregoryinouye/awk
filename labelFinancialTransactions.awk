@@ -9,7 +9,7 @@ BEGIN {
 $4 ~ /AUTOPAY/ { next }
 
 {
-	# Input file column order: Date,Amount,,Description,Additional Information
+	# Input file column order: Date,Amount,Category,Description,Additional Information
 	# remove unnecessary double quotes
 	gsub("\"", "", $0)
 }
