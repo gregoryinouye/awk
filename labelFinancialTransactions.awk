@@ -3,6 +3,7 @@
 BEGIN {
 	OFS="\t"
 	FS="\t"
+	IGNORECASE=1
 }
 
 {
@@ -11,12 +12,12 @@ BEGIN {
 }
 
 # remove autopay payments
-$4 ~ /(^AUTOPAY$)|(^INTERNET PAYMENT)|(^PAYMENT \- THANK YOU)|(^REWARD REDEMPTION CREDIT)|(^SMALL BALANCE CREDIT)/ { next }
+$4 ~ /(^AUTOPAY$)|(^INTERNET PAYMENT)|(^PAYMENT \- THANK YOU)|(^Payment Thank You)|(^REWARD REDEMPTION CREDIT)|(^SMALL BALANCE CREDIT)/ { next }
 
 # Input file column order: Date,Amount,Category,Description,Additional Information
 # categorize common transactions
 $4 ~ /(^ADIDAS)|(^DSW)|(^MADEWELL)|(SP \* OUTDOOR VOICES)|(^ROSS STORES)|(^SweatyBetty)|(^UNIQLO)|(^ZAP\*ZAPPOS)|(^Zappos)/ { $3="Clothing" }
-$4 ~ /(^Kindle Svcs)|(LEANPUB)/ { $3="Entertainment" }
+$4 ~ /(^AMZN Digital)|(^Kindle Svcs)|(LEANPUB)/ { $3="Entertainment" }
 #$4 ~ /(^)/ { $3="Gift" }
 $4 ~ /(^KAISER)|(Optometry)/ { $3="Medical" }
 $4 ~ /(^CVS)|(^GLOSSIER)|(^GREATKUTS)|(^WWW\.SALLYBEAUTY)|(^ULTA)|(^VERSAILLES)/ { $3="Personal Care" }
@@ -36,7 +37,7 @@ $4 ~ /(AUTOMOTIVE)|(^SQ \*KAADY CAR WASHES)|(^STATE OF CALIF DMV)|(^CA DMV FEE)/
 $4 ~ /(^76 )|(^CHEVRON)|(^VALERO)/ { $3="Gas" }
 #$4 ~ /(^)/ { $3="Parking" }
 $4 ~ /(^SOUTHWEST)/ { $3="Travel" }
-$4 ~ /(BRIGHTFUNDS)/ { $3="Tithe" }
+$4 ~ /(^PAYPAL \*GRACECHURCH$)|(BRIGHTFUNDS)/ { $3="Tithe" }
 
 { print }
 
