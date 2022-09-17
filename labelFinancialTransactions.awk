@@ -3,20 +3,20 @@
 BEGIN {
 	OFS="\t"
 	FS="\t"
-	IGNORECASE=1
 }
 
-{
-	# remove unnecessary double quotes
-	gsub("\"", "", $0)
-}
+# remove all double quotes
+{ gsub("\"", "", $0) }
 
 # remove autopay payments
-$4 ~ /(^AUTOPAY$)|(^INTERNET PAYMENT)|(^PAYMENT \- THANK YOU)|(^Payment Thank You)|(^REWARD REDEMPTION CREDIT)|(^SMALL BALANCE CREDIT)/ { next }
+$4 ~ /(^AUTOPAY$)|(^CREDIT BALANCE REFUND)|(^INTERNET PAYMENT)|(^PAYMENT (\- )?THANK YOU)|(^Payment Thank You)|(^REWARD REDEMPTION CREDIT)|(^SMALL BALANCE CREDIT)/ { next }
+
+# remove fee line item if zero
+$4 ~ /^ANNUAL MEMBERSHIP FEE/ && $2==0 { next }
 
 # Input file column order: Date,Amount,Category,Description,Additional Information
 # categorize common transactions
-$4 ~ /(^ADIDAS)|(^DSW)|(^MADEWELL)|(SP \* OUTDOOR VOICES)|(^ROSS STORES)|(^SweatyBetty)|(^UNIQLO)|(^ZAP\*ZAPPOS)|(^Zappos)/ { $3="Clothing" }
+$4 ~ /(^ADIDAS)|(^AE OUTF ONLINE)|(^A EAGLE OUTFTR)|(^ATHLETA)|(^DSW)|(^MADEWELL)|(^NORDSTROM((-| )RACK| DIRECT)?)|(^NORDRACKCOM)|(SP \* OUTDOOR VOICES)|(^ROSS STORES)|(^SweatyBetty)|(^UNIQLO)|(^ZAP\*ZAPPOS)|(^Zappos)/ { $3="Clothing" }
 $4 ~ /(^AMZN Digital)|(^Kindle Svcs)|(LEANPUB)/ { $3="Entertainment" }
 #$4 ~ /(^)/ { $3="Gift" }
 $4 ~ /(^KAISER)|(Optometry)/ { $3="Medical" }
@@ -37,6 +37,8 @@ $4 ~ /(AUTOMOTIVE)|(^SQ \*KAADY CAR WASHES)|(^STATE OF CALIF DMV)|(^CA DMV FEE)/
 $4 ~ /(^76 )|(^CHEVRON)|(^VALERO)/ { $3="Gas" }
 #$4 ~ /(^)/ { $3="Parking" }
 $4 ~ /(^SOUTHWEST)/ { $3="Travel" }
+# force rewards to be a positive credit
+$4 ~ /(^REWARDS REDEEMED FOR STATEMENT CREDIT)/ { gsub("^-", "", $2); $3="Income Other" }
 $4 ~ /(^PAYPAL \*GRACECHURCH$)|(BRIGHTFUNDS)/ { $3="Tithe" }
 
 { print }
